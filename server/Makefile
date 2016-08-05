@@ -80,9 +80,8 @@ PKGCONFIG_LIBNL = \
 TOPTALK_LIB = ../deps/toptalk/toptalk.a
 MESSAGES = ../messages/jt-messages.a
 
-LFLAGS = -lwebsockets -ljansson -lm -lpcap
-CFLAGS = -W -Wall -std=c11 -g -pthread $(CFLAGS_EXTRA)
-
+LDFLAGS = -lwebsockets -ljansson -lm -lpcap
+CFLAGS := -pthread $(CFLAGS)
 
 all: $(PROG) Makefile ../make.config
 	@echo -----------------------------------
@@ -93,7 +92,7 @@ all: $(PROG) Makefile ../make.config
 	@echo -----------------------------------
 
 $(PROG): $(SOURCES) $(HEADERS) $(MESSAGES) $(MAKEDEPENDS)
-	$(CC) $(SOURCES) $(INCLUDES) $(TOPTALK_LIB) $(MESSAGES) -o $@ $(CFLAGS) $(LFLAGS) $(DEFINES) $(PKGCONFIG_LIBNL)
+	$(CC) $(SOURCES) $(INCLUDES) $(TOPTALK_LIB) $(MESSAGES) -o $@ $(CFLAGS) $(LDFLAGS) $(DEFINES) $(PKGCONFIG_LIBNL)
 
 
 indent:
