@@ -30,7 +30,6 @@ INCLUDES = \
  -I ../deps/toptalk
 
 LFLAGS = -ljansson
-CFLAGS = -W -Wall -pedantic -std=c11 -g $(CFLAGS_EXTRA)
 
 $(LIB): compile lib test-packing Makefile
 
