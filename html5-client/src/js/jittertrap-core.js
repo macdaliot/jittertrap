@@ -20,8 +20,12 @@ JT = (function (my) {
     return samplePeriod;
   };
 
+  /* number of samples to keep for a complete chart series. */
+  var sampleWindowSize = 200;
   /* number of data samples. */
-  var sampleCount = 200;
+  /* FIXME: see about replacing sampleCount with sampleWindowSize */
+  var sampleCount = sampleWindowSize;
+
 
   my.core.sampleCount = function () {
     return sampleCount;
@@ -331,10 +335,6 @@ JT = (function (my) {
     return interval + '/' + flow.src + '/' + flow.sport + '/' + flow.dst +
            '/' + flow.dport + '/' + flow.proto;
   };
-
-  /* FIXME: see about replacing sampleCount with sampleWindowSize */
-  /* number of samples to keep for a complete chart series. */
-  var sampleWindowSize = 200;
 
   var msgToFlows = function (msg, timestamp) {
     var interval = msg.interval_ns;
