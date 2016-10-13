@@ -7,7 +7,7 @@ int jt_toptalk_printer(void *data);
 int jt_toptalk_free(void *data);
 const char *jt_toptalk_test_msg_get();
 
-#define MAX_FLOWS 10
+#define MAX_FLOWS 20
 #define ADDR_LEN 40
 #define PROTO_LEN 5
 
@@ -16,11 +16,11 @@ struct jt_msg_toptalk
 	struct timespec timestamp;
 	uint64_t interval_ns;
 	uint32_t tflows;
-	uint32_t tbytes;
-	uint32_t tpackets;
+	int64_t tbytes;
+	int64_t tpackets;
 	struct {
-		uint32_t bytes;
-		uint32_t packets;
+		int64_t bytes;
+		int64_t packets;
 		uint16_t sport;
 		uint16_t dport;
 		char src[ADDR_LEN];

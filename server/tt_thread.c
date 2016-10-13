@@ -1,6 +1,7 @@
 #include <net/ethernet.h>
 #include <arpa/inet.h>
-
+#include <sched.h>
+#include <errno.h>
 #include <pthread.h>
 
 #include <jansson.h>
@@ -16,14 +17,22 @@
 
 #include "tt_thread.h"
 
-struct tt_thread_info ti = { 0 };
-
-struct intervals_thread_info {
-	pthread_t thread_id;
-	pthread_attr_t thread_attr;
+struct tt_thread_info ti = {
+	0,
+	.thread_name = "jt-toptalk",
+	.thread_prio = 3
 };
 
-struct intervals_thread_info iti = { 0 };
+struct {
+	pthread_t thread_id;
+	pthread_attr_t thread_attr;
+	const char * const thread_name;
+	const int thread_prio;
+} iti = {
+	0,
+	.thread_name = "jt-intervals",
+	.thread_prio = 2
+};
 
 static char const *const protos[IPPROTO_MAX] = {[IPPROTO_TCP] = "TCP",
                                                 [IPPROTO_UDP] = "UDP",
@@ -55,7 +64,7 @@ int tt_thread_restart(char * iface)
 
 	err = pthread_create(&ti.thread_id, &ti.attr, tt_intervals_run, &ti);
 	assert(!err);
-        pthread_setname_np(ti.thread_id, "jt-toptalk");
+        pthread_setname_np(ti.thread_id, ti.thread_name);
 
 	tt_update_ref_window_size(tt_intervals[0]);
 	tt_update_ref_window_size(tt_intervals[INTERVAL_COUNT - 1]);
@@ -67,10 +76,10 @@ int tt_thread_restart(char * iface)
 static int
 m2m(struct tt_top_flows *ttf, struct mq_tt_msg *msg, int interval)
 {
-	struct timespec t = {0};
 	struct jt_msg_toptalk *m = &msg->m;
 
-	m->timestamp = t;
+	clock_gettime(CLOCK_MONOTONIC, &m->timestamp);
+
 	m->interval_ns = tt_intervals[interval].tv_sec * 1E9
 		+ tt_intervals[interval].tv_usec * 1E3;
 
@@ -80,7 +89,9 @@ m2m(struct tt_top_flows *ttf, struct mq_tt_msg *msg, int interval)
 
 	for (int f = 0; f < MAX_FLOWS; f++) {
 		m->flows[f].bytes = ttf->flow[f][interval].bytes;
+		assert(ttf->flow[f][interval].bytes >= 0);
 		m->flows[f].packets = ttf->flow[f][interval].packets;
+		assert(ttf->flow[f][interval].packets >= 0);
 		m->flows[f].sport = ttf->flow[f][interval].flow.sport;
 		m->flows[f].dport = ttf->flow[f][interval].flow.dport;
 		snprintf(m->flows[f].proto, PROTO_LEN, "%s",
@@ -134,6 +145,45 @@ static uint32_t calc_intervals(uint32_t intervals[INTERVAL_COUNT])
 	return 1E3 * tt_intervals[0].tv_usec + 1E9 * tt_intervals[0].tv_sec;
 }
 
+static void set_affinity()
+{
+	int s, j;
+	cpu_set_t cpuset;
+	pthread_t thread;
+	thread = pthread_self();
+	CPU_ZERO(&cpuset);
+	CPU_SET(RT_CPU, &cpuset);
+	s = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+	if (s != 0) {
+		handle_error_en(s, "pthread_setaffinity_np");
+	}
+
+	/* Check the actual affinity mask assigned to the thread */
+	s = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
+	if (s != 0) {
+		handle_error_en(s, "pthread_getaffinity_np");
+	}
+
+	printf("RT thread [%s] priority [%d] CPU affinity: ",
+	       iti.thread_name, iti.thread_prio);
+
+	for (j = 0; j < CPU_SETSIZE; j++) {
+		if (CPU_ISSET(j, &cpuset)) {
+			printf(" CPU%d", j);
+		}
+	}
+	printf("\n");
+}
+
+static int init_realtime(void)
+{
+	struct sched_param schedparm;
+	memset(&schedparm, 0, sizeof(schedparm));
+	schedparm.sched_priority = iti.thread_prio;
+	sched_setscheduler(0, SCHED_FIFO, &schedparm);
+	set_affinity();
+	return 0;
+}
 
 static void *intervals_run(void *data)
 {
@@ -144,6 +194,8 @@ static void *intervals_run(void *data)
 	/* integer multiple of gcd in interval */
 	uint32_t imuls[INTERVAL_COUNT];
 	uint32_t sleep_time_ns = calc_intervals(imuls);
+
+	init_realtime();
 
 	clock_gettime(CLOCK_MONOTONIC, &deadline);
 
@@ -157,7 +209,7 @@ static void *intervals_run(void *data)
 		}
 
 		/* increment / wrap tick */
-		tick = (imuls[INTERVAL_COUNT-1] == tick) ? 0 : tick + 1;
+		tick = (imuls[INTERVAL_COUNT-1] == tick) ? 1 : tick + 1;
 
 		deadline.tv_nsec += sleep_time_ns;
 
@@ -189,7 +241,7 @@ int intervals_thread_init()
 	err = pthread_create(&iti.thread_id, &iti.thread_attr, intervals_run,
 	                     NULL);
 	assert(!err);
-	pthread_setname_np(iti.thread_id, "jt-intervals");
+	pthread_setname_np(iti.thread_id, iti.thread_name);
 
 	return 0;
 }

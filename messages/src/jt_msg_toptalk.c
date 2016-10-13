@@ -17,6 +17,7 @@ static const char *tt_test_msg =
     "{\"msg\":\"tt\","
     " \"p\":{\"tflows\":5, \"tbytes\": 9999, \"tpackets\": 888,"
     " \"interval_ns\": 123,"
+    " \"timestamp\": {\"tv_sec\": 123, \"tv_nsec\": 456},"
     " \"flows\": ["
     "{\"src\":\"192.168.0.1\", \"dst\": \"192.168.0.2\", \"sport\":32000, \"dport\":32000, \"proto\": \"udp\", \"bytes\":100, \"packets\":10},"
     "{\"src\":\"192.168.0.1\", \"dst\": \"192.168.0.2\", \"sport\":32001, \"dport\":32001, \"proto\": \"udp\", \"bytes\":100, \"packets\":10},"
@@ -31,15 +32,16 @@ int jt_toptalk_printer(void *data)
 {
 	struct jt_msg_toptalk *t = (struct jt_msg_toptalk*)data;
 
-	printf("\r fc:%"PRId32", b: %"PRId32", p:%"PRId32,
-	       t->tflows, t->tbytes, t->tpackets);
+	printf("\r t:%ld.%09ld fc:%"PRId32", b: %"PRId64", p:%"PRId64"\n",
+	       t->timestamp.tv_sec, t->timestamp.tv_nsec, t->tflows, t->tbytes,
+	       t->tpackets);
 	return 0;
 }
 
 int jt_toptalk_unpacker(json_t *root, void **data)
 {
 	json_t *params;
-	json_t *t, *flows;
+	json_t *t, *flows, *timestamp;
 
 	struct jt_msg_toptalk *tt;
 
@@ -73,6 +75,25 @@ int jt_toptalk_unpacker(json_t *root, void **data)
 		goto unpack_fail;
 	}
 	tt->interval_ns = json_integer_value(t);
+
+	timestamp = json_object_get(params, "timestamp");
+	if ((JSON_OBJECT != json_typeof(timestamp))
+	    || (0 == json_object_size(timestamp)))
+	{
+		goto unpack_fail;
+	}
+
+	t = json_object_get(timestamp, "tv_sec");
+	if (!json_is_integer(t)) {
+		goto unpack_fail;
+	}
+	tt->timestamp.tv_sec = json_integer_value(t);
+
+	t = json_object_get(timestamp, "tv_nsec");
+	if (!json_is_integer(t)) {
+		goto unpack_fail;
+	}
+	tt->timestamp.tv_nsec = json_integer_value(t);
 
 	flows = json_object_get(params, "flows");
 	if (!json_is_array(flows)) {
@@ -146,9 +167,12 @@ int jt_toptalk_packer(void *data, char **out)
 {
 	struct jt_msg_toptalk *tt_msg = data;
 	json_t *t = json_object();
+	json_t *timestamp = json_object();
 	json_t *params = json_object();
 	json_t *flows_arr = json_array();
 	json_t *flows[MAX_FLOWS];
+
+	assert(tt_msg);
 
 	json_object_set_new(params, "tflows", json_integer(tt_msg->tflows));
 	json_object_set_new(params, "tbytes", json_integer(tt_msg->tbytes));
@@ -156,7 +180,14 @@ int jt_toptalk_packer(void *data, char **out)
 	json_object_set_new(params, "interval_ns",
 	                    json_integer(tt_msg->interval_ns));
 
-	assert(tt_msg);
+	char tv_sec[20], tv_nsec[10];
+	snprintf(tv_sec, sizeof(tv_sec), "%19ld", tt_msg->timestamp.tv_sec);
+	snprintf(tv_nsec, sizeof(tv_nsec), "%09ld", tt_msg->timestamp.tv_nsec);
+	json_object_set(timestamp, "tv_sec",
+	                json_string(tv_sec));
+	json_object_set(timestamp, "tv_nsec",
+	                json_string(tv_nsec));
+	json_object_set(params, "timestamp", timestamp);
 
 	/* tt_msg->tflows is the Total flows recorded, not the number of flows
 	 * listed in the message, so it will be more than MAX_FLOWS...
@@ -198,6 +229,8 @@ int jt_toptalk_packer(void *data, char **out)
 	json_decref(flows_arr);
 	json_object_clear(params);
 	json_decref(params);
+	json_object_clear(timestamp);
+	json_decref(timestamp);
 	json_object_clear(t);
 	json_decref(t);
 	return 0;
