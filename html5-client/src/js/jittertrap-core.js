@@ -131,6 +131,8 @@ JT = (function (my) {
     clearSeries(sBin.rxRate);
     clearSeries(sBin.txPacketRate);
     clearSeries(sBin.rxPacketRate);
+
+    clearFlows();
   };
 
   var numSort = function(a,b) {
@@ -328,11 +330,21 @@ JT = (function (my) {
     }
   };
 
+  /***** Top Flows follows *****/
+
   var flows = {};
   var flowRank = {}; /* a sortable list of flow keys for each interval */
 
   var flowsTS = {};
   var flowsTotals = {};
+
+  /* discard all previous flow data, like when changing capture interface */
+  var clearFlows = function () {
+    flows = {};
+    flowRank = {};
+    flowsTS = {};
+    flowsTotals = {};
+  };
 
   var getFlowKey = function (interval, flow) {
     return interval + '/' + flow.src + '/' + flow.sport + '/' + flow.dst +
