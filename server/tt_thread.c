@@ -12,7 +12,6 @@
 #include "mq_msg_tt.h"
 
 #include "flow.h"
-#include "intervals_user.h"
 #include "intervals.h"
 
 #include "tt_thread.h"
@@ -66,8 +65,8 @@ int tt_thread_restart(char * iface)
 	assert(!err);
         pthread_setname_np(ti.thread_id, ti.thread_name);
 
-	tt_update_ref_window_size(tt_intervals[0]);
-	tt_update_ref_window_size(tt_intervals[INTERVAL_COUNT - 1]);
+	tt_update_ref_window_size(&ti, tt_intervals[0]);
+	tt_update_ref_window_size(&ti, tt_intervals[INTERVAL_COUNT - 1]);
 
 	return 0;
 }
@@ -89,9 +88,7 @@ m2m(struct tt_top_flows *ttf, struct mq_tt_msg *msg, int interval)
 
 	for (int f = 0; f < MAX_FLOWS; f++) {
 		m->flows[f].bytes = ttf->flow[f][interval].bytes;
-		assert(ttf->flow[f][interval].bytes >= 0);
 		m->flows[f].packets = ttf->flow[f][interval].packets;
-		assert(ttf->flow[f][interval].packets >= 0);
 		m->flows[f].sport = ttf->flow[f][interval].flow.sport;
 		m->flows[f].dport = ttf->flow[f][interval].flow.dport;
 		snprintf(m->flows[f].proto, PROTO_LEN, "%s",
