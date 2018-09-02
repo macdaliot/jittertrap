@@ -30,22 +30,22 @@ $(document).ready(function() {
   JT.ws.init(wsUri);
 
   // UI Event Handlers
-  $("#chopts_series").bind('change', JT.charts.resetChart);
-  $('#set_netem_button').bind('click', JT.ws.set_netem);
-  $('#clear_netem_button').bind('click', JT.ws.clear_netem);
-  $('#dev_select').bind('change', JT.ws.dev_select);
-  $('#chopts_stop_start').bind('click', JT.charts.toggleStopStartGraph);
+  $("#chopts_series").on('change', JT.charts.resetChart);
+  $('#set_netem_button').on('click', JT.ws.set_netem);
+  $('#clear_netem_button').on('click', JT.ws.clear_netem);
+  $('#dev_select').on('change', JT.ws.dev_select);
+  $('#chopts_stop_start').on('click', JT.charts.toggleStopStartGraph);
 
-  $("#chopts_chartPeriod").bind('change', function() {
+  $("#chopts_chartPeriod").on('change', function() {
     var plotPeriod = $("#chopts_chartPeriod").val();
     var result = JT.charts.setChartPeriod(plotPeriod);
     $("#chopts_chartPeriod").val(result.newPeriod);
     $("#jt-measure-datalength").html(result.sampleCount);
   });
 
-  $("#showTputPanel")
+  $("[href=#showTputPanel]")
     .on('shown.bs.tab', JT.charts.resetChart);
-  $("#showTopTalkPanel")
+  $("[href=#showTopTalkPanel]")
     .on('shown.bs.tab', JT.charts.resetChart);
 
   $('#more_chopts_toggle').click(function() {
@@ -59,17 +59,17 @@ $(document).ready(function() {
   });
 
   // Disable form submit
-  $('#chartsForm').submit(function(e){ e.preventDefault(); });
-  $('#devSelectForm').submit(function(e){ e.preventDefault(); });
-  $('#impairmentsForm').submit(false);
+  $('#chartsForm').on('submit', function(e){ e.preventDefault(); });
+  $('#devSelectForm').on('submit', function(e){ e.preventDefault(); });
+  $('#impairmentsForm').on('submit', false);
 
 
   // Changing traps from the list of traps in the trap modal
-  $('#trap_names').bind('change', JT.trapModule.trapSelectionHandler);
+  $('#trap_names').on('change', JT.trapModule.trapSelectionHandler);
   // Add a trap
-  $('#add_trap_modal button').last().click(JT.trapModule.addTrapHandler);
+  $('#add_trap_modal button').last().on('click', JT.trapModule.addTrapHandler);
 
   $("#new_program").val(JT.programsModule.templateProgram);
-  $('#add_program_modal button').last().click(JT.programsModule.addProgramHandler);
+  $('#add_program_modal button').last().on('click', JT.programsModule.addProgramHandler);
 });
 
