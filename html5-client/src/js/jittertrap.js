@@ -43,21 +43,6 @@ $(document).ready(function() {
     $("#jt-measure-datalength").html(result.sampleCount);
   });
 
-  $("[href=#showTputPanel]")
-    .on('shown.bs.tab', JT.charts.resetChart);
-  $("[href=#showTopTalkPanel]")
-    .on('shown.bs.tab', JT.charts.resetChart);
-
-  $('#more_chopts_toggle').click(function() {
-    $('#more_chopts').toggle("fast");
-    return false;
-  });
-
-  $('#trigger_toggle').click(function() {
-    $('#trigger_chopts').toggle("fast");
-    return false;
-  });
-
   // Disable form submit
   $('#chartsForm').on('submit', function(e){ e.preventDefault(); });
   $('#devSelectForm').on('submit', function(e){ e.preventDefault(); });

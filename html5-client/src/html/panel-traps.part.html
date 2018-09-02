@@ -1,7 +1,7 @@
         <!-- Traps -->
-        <div id="trapsPanel" class="tab-pane fade">
-          <div class="panel panel-default">
-            <div class="panel-body">
+        <div id="trapsPanel" class="tab-pane fade" role="tabpanel">
+          <div class="card border-0">
+            <div class="card-body">
               <button id="trap_add" class="btn btn-default" data-toggle="modal" data-target="#add_trap_modal" type="button">
                 <span class="fas fa-plus" aria-hidden="true"></span>
                 Add Trap
@@ -12,8 +12,8 @@
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                       <h4 class="modal-title">Add a Trap</h4>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
                       <form>
@@ -31,9 +31,9 @@
                           <option data-trap-type="tx_pkt_gap" data-trap-units="ms">Max Tx Packet Spacing Exceeds</option>
                         </select>
                         <!-- Trap value and measurement units for that value -->
-                        <div class="input-group">
+                        <div class="input-group m-3">
                           <input id="trap_value" class="form-control" type="text" />
-                          <span class="input-group-addon">Kbps</span>
+                          <span class="input-group-text">Kbps</span>
                         </div>
                       </form>
                     </div>
@@ -45,6 +45,7 @@
                 </div>
               </div>
 
+              <div class="card m-3">
               <table id="traps_table" class="table">
                 <thead>
                   <tr>
@@ -73,9 +74,11 @@
                   -->
                 </tbody>
               </table>
+              </div>
 
-              <div>&nbsp;</div>
+              <div class="m-5">&nbsp;</div>
 
+              <div class="card m-3">
               <table class="table table-condensed measurements">
                 <thead>
                   <tr>
@@ -146,8 +149,9 @@
                 </tr>
                 </tbody>
               </table>
+              </div>
 
-            </div> <!-- end panel body -->
-          </div> <!-- end panel -->
+            </div> <!-- end card body -->
+          </div> <!-- end card -->
         </div> <!-- end tab pane -->
         <!-- End of Traps -->

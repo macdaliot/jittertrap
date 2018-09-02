@@ -1,11 +1,11 @@
         <!-- Chart Parameters -->
-        <div id="chartsPanel" class="tab-pane fade in active">
-          <div class="panel panel-default">
-            <div class="panel-body">
+        <div id="chartsPanel" class="tab-pane fade show active" role="tabpanel">
+          <div class="card card-default">
+            <div class="card-body">
               <form id="chartsForm" class="form-inline">
                 <div class="form-group">
                   <label for="chopts_chartPeriod">Interval</label>
-                  <div class="input-group">
+                  <div class="input-group m-3">
                     <select id="chopts_chartPeriod" class="form-control">
                       <option value=5>5</option>
                       <option value=10>10</option>
@@ -16,27 +16,31 @@
                       <option value=500>500</option>
                       <option value=1000 selected>1000</option>
                     </select>
-                    <span class="input-group-addon">ms</span>
+                    <span class="input-group-text">ms</span>
                   </div>
                 </div>
-                <button id="chopts_stop_start" class="btn btn-primary"> Pause/Run</button>
+                <button id="chopts_stop_start" class="btn btn-primary m-3"> Pause/Run</button>
 
-                <div class="btn-group" data-toggle="tab">
-                  <label id="showTputPanel" class="btn btn-primary" data-toggle="tab" href="#tputPanel">Throughput</label>
-                  <label id="showTopTalkPanel" class="btn btn-primary" data-toggle="tab" href="#toptalkPanel">Top Talkers</label>
+                <nav>
+                <div class="btn-group btn-group-toggle m-3 nav">
+                  <button type="button" id="showTputPanel" class="btn btn-primary nav-item" data-toggle="tab" href="#tputPanel">Throughput</button>
+                  <button type="button" id="showTopTalkPanel" class="btn btn-primary nav-item" data-toggle="tab" href="#toptalkPanel">Top Talkers</button>
                 </div>
+                </nav>
 
                 <div class="tab-content">
-                  <div id="tputPanel" class="tab-pane active">
+                  <div id="tputPanel" class="tab-pane active" role="tabpanel">
                     <div style="padding:10px;"></div>
                     <div class="form-group">
                       <label for="chopts_series">Series</label>
+                      <div class="input-group m-3">
                       <select id="chopts_series" class="form-control">
                         <option value="rxRate" selected="selected">Rx Bitrate</option>
                         <option value="txRate">Tx Bitrate</option>
                         <option value="rxPacketRate">Rx Packet Rate</option>
                         <option value="txPacketRate">Tx Packet Rate</option>
                       </select>
+                      </div>
                     </div>
                     <div style="padding:10px;"></div>
                     <div id="chartThroughput" style="height: 300px; width:100%;"></div>
@@ -44,12 +48,12 @@
                     <div id="packetGapContainer" style="height: 300px; width: 100%;"></div>
                   </div>
 
-                  <div id="toptalkPanel" class="tab-pane ">
+                  <div id="toptalkPanel" class="tab-pane" role="tabpanel">
                     <div style="padding:10px;"></div>
                     <div id="chartToptalk" style="height: 700px; width:100%;"></div>
                   </div>
                 </div>
               </form>
             </div>
-          </div> <!-- panel -->
+          </div> <!-- card -->
         </div> <!-- tab pane -->

@@ -13,7 +13,7 @@
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/mustache.min.js"></script>
     <script type="text/javascript" src="js/cbuffer.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="js/d3.min.js"></script>
     <script type="text/javascript" src="js/jittertrap-concat.js"></script>
 
@@ -21,10 +21,10 @@
   <body>
     <div class="page-header"></div>
     <div class="container">
-      <div class="panel panel-default">
-        <div class="panel-body">
-        <div class="row">
-          <div class="col-xs-5">
+      <div class="card">
+        <div class="card-header">
+        <div class="form-row">
+          <div class="col-5">
             <div class="dropdown">
               <button class="btn btn-default dropdown-toggle brand-name" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 ##PRODUCT-BRANDING## <span class="caret"></span>
@@ -35,31 +35,48 @@
               </ul>
             </div>
           </div>
-          <div class="col-xs-5">
+          &nbsp;
+          <div class="col-5">
             <form id="devSelectForm" class="form-inline">
-              <div class="form-group">
-                <label for="dev_select">Interface</label>
+              <label for="dev_select">Interface</label>
+              <div class="form-group m-1">
                 <select id="dev_select" class="form-control"></select>
               </div>
             </form>
           </div>
         </div> <!-- row -->
-        </div> <!-- panel-body -->
+        </div> <!-- card-body -->
       </div>
 
+&nbsp;
 
-      <ul class="nav nav-tabs nav-justified">
-        <li class="active"><a data-toggle="tab" href="#chartsPanel"><span class="fas fa-chart-area" aria-hidden="true"></span>&nbsp;Charts</a></li>
-        <li><a data-toggle="tab" href="#impairmentsPanel"><span class="fas fa-hourglass-half" aria-hidden="true"></span>&nbsp;Impairments</a></li>
-        <li><a data-toggle="tab" href="#trapsPanel"><span class="fas
-fa-exclamation-triangle" aria-hidden="true"></span>&nbsp;Traps & Measurements</a></li>
+<div class="card text-center">
+  <div class="card-header">
+      <ul class="nav nav-tabs nav-fill card-header-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#chartsPanel" role="tab" aria-controls="chartsPanel" aria-selected="true">
+            <span class="fas fa-chart-area" aria-hidden="true"></span>&nbsp;Charts
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#impairmentsPanel" role="tab" aria-controls="impairmentsPanel" aria-selected="false">
+            <span class="fas fa-hourglass-half" aria-hidden="true"></span>&nbsp;Impairments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"  data-toggle="tab" href="#trapsPanel" role="tab" aria-controls="trapsPanel" aria-selected="false">
+            <span class="fas fa-exclamation-triangle" aria-hidden="true"></span>&nbsp;Traps & Measurements
+          </a>
+        </li>
       </ul>
-
+  </div>
+  <div class="card-body">
       <div class="tab-content">
-##PANEL-IMPAIRMENTS##
 ##PANEL-CHARTPARAMS##
+##PANEL-IMPAIRMENTS##
 ##PANEL-TRAPS##
       </div> <!-- end tab-content -->
+  </div>
 
       <!-- Modals -->
 ##MODAL-ERROR##
