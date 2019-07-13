@@ -33,18 +33,14 @@ We're aiming to release packages for Fedora, Ubuntu and OpenWRT and **would appr
 
 Build dependencies:  
 
-    sudo dnf install libnl3-devel jansson-devel libwebsockets-devel
+    sudo dnf install libnl3-devel jansson-devel libwebsockets-devel libpcap-devel
 
 Run-time dependencies:
 
-    sudo yum install libnl3 jansson libwebsockets
+    sudo dnf install libnl3 jansson libwebsockets libpcap
 
 
 #### Ubuntu  
-libwebsockets packages are available for Xenial Xerus and later. Backports might be available from [this ppa](https://launchpad.net/~acooks/+archive/ubuntu/libwebsockets6)
-
-    sudo apt-add-repository ppa:acooks/libwebsockets6
-    sudo apt-get update
 
 Build dependencies:
 
@@ -67,4 +63,6 @@ Build:
 
 Run:
 
-    sudo ./server/jt-server --resource_path html5-client/output/
+    sudo ./server/jt-server --port 8080 --resource_path html5-client/output/
+
+Now point your web browser to the user interface, eg. http://localhost:8080/
