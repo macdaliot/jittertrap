@@ -44,9 +44,10 @@ CFLAGS_HARDENED = \
  --param ssp-buffer-size=4 \
  -fPIE -pie -Wl,-z,relro,-z,now
 
-CFLAGS := -Wall -Wpedantic -std=c11 -pthread $(CFLAGS_HARDENED) $(INCLUDES) $(DEFINES) $(PKGCONFIG_LIBNL) $(CFLAGS)
+CFLAGS := -Wall -Wpedantic -flto -std=c11 -pthread $(CFLAGS_HARDENED) $(INCLUDES) $(DEFINES) $(PKGCONFIG_LIBNL) $(CFLAGS)
 LDLIBS := -ljansson $(LDLIBS)
 
+AR = "gcc-ar"
 
 .PHONY: all
 all: $(LIB) test-packing
@@ -56,7 +57,7 @@ $(OBJECTS): %.o: src/%.c include/%.h Makefile ../make.config
 
 
 $(LIB): $(OBJECTS) Makefile
-	ar cr $(LIB) *.o
+	$(AR) cr $(LIB) *.o
 
 
 .PHONY: indent
